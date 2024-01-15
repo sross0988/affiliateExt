@@ -1,9 +1,13 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
+import { CirclePicker } from 'react-color';
+
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box, { BoxProps as MuiBoxProps } from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -15,8 +19,9 @@ import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
 import StatList from './StatList';
 import TableChartList from './TableChartList';
+import { ListSubheader, Tooltip } from '@mui/material';
 
-const drawerWidth = 440;
+const drawerWidth = 390;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -35,6 +40,53 @@ interface AppBarProps extends MuiAppBarProps {
 interface BoxProps extends MuiBoxProps {
     drawerOpen?: boolean;
 }
+
+const MaterialUISwitch = styled(Switch)(({ theme }) => ({
+    width: 62,
+    height: 34,
+    padding: 7,
+    '& .MuiSwitch-switchBase': {
+        margin: 1,
+        padding: 0,
+        transform: 'translateX(6px)',
+        '&.Mui-checked': {
+            color: '#fff',
+            transform: 'translateX(22px)',
+            '& .MuiSwitch-thumb:before': {
+                backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+                    '#fff',
+                )}" d="M4.2 2.5l-.7 1.8-1.8.7 1.8.7.7 1.8.6-1.8L6.7 5l-1.9-.7-.6-1.8zm15 8.3a6.7 6.7 0 11-6.6-6.6 5.8 5.8 0 006.6 6.6z"/></svg>')`,
+            },
+            '& + .MuiSwitch-track': {
+                opacity: 1,
+                backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
+            },
+        },
+    },
+    '& .MuiSwitch-thumb': {
+        backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
+        width: 32,
+        height: 32,
+        '&::before': {
+            content: "''",
+            position: 'absolute',
+            width: '100%',
+            height: '100%',
+            left: 0,
+            top: 0,
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center',
+            backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(
+                '#fff',
+            )}" d="M9.305 1.667V3.75h1.389V1.667h-1.39zm-4.707 1.95l-.982.982L5.09 6.072l.982-.982-1.473-1.473zm10.802 0L13.927 5.09l.982.982 1.473-1.473-.982-.982zM10 5.139a4.872 4.872 0 00-4.862 4.86A4.872 4.872 0 0010 14.862 4.872 4.872 0 0014.86 10 4.872 4.872 0 0010 5.139zm0 1.389A3.462 3.462 0 0113.471 10a3.462 3.462 0 01-3.473 3.472A3.462 3.462 0 016.527 10 3.462 3.462 0 0110 6.528zM1.665 9.305v1.39h2.083v-1.39H1.666zm14.583 0v1.39h2.084v-1.39h-2.084zM5.09 13.928L3.616 15.4l.982.982 1.473-1.473-.982-.982zm9.82 0l-.982.982 1.473 1.473.982-.982-1.473-1.473zM9.305 16.25v2.083h1.389V16.25h-1.39z"/></svg>')`,
+        },
+    },
+    '& .MuiSwitch-track': {
+        opacity: 1,
+        backgroundColor: theme.palette.mode === 'dark' ? '#8796A5' : '#aab4be',
+        borderRadius: 20 / 2,
+    },
+}));
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'drawerOpen',
@@ -75,13 +127,22 @@ export default function PrimarySearchAppBar({
     stats,
     setStats,
     tablesCharts,
-    setTablesCharts
+    setTablesCharts,
+    setPrimaryColor,
+    primaryColor,
+    setDarkMode,
+    darkMode,
+
 }: {
     children: React.ReactNode;
     stats: string[];
     setStats: (stats: string[]) => void;
     tablesCharts: string[];
     setTablesCharts: (tablesCharts: string[]) => void;
+    setPrimaryColor: (color: string) => void;
+    primaryColor: string;
+    setDarkMode: (darkMode: boolean) => void;
+    darkMode: boolean;
 
 }) {
     const [hideData, setHideData] = useLocalStorage('hideData', false);
@@ -103,6 +164,8 @@ export default function PrimarySearchAppBar({
         }
     }
 
+
+
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" drawerOpen={drawerOpen}>
@@ -117,27 +180,34 @@ export default function PrimarySearchAppBar({
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
-                        <Box
-                            display="flex"
-                            justifyContent={"flex-end"}
+                        <Tooltip
+                            title={hideData ? 'Show data' : 'Hide data'}
                         >
-                            <FormGroup>
-                                <FormControlLabel control={<Switch
-                                    checked={hideData}
-                                    onChange={() => setHideData(!hideData)}
-                                />} label="Hide data" />
-                            </FormGroup>
-                        </Box>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            aria-label="display settings"
-                            aria-haspopup="true"
-                            onClick={drawerOpen ? handleDrawerClose : handleDrawerOpen}
-                            color="inherit"
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                aria-label="display settings"
+                                aria-haspopup="true"
+                                onClick={() => setHideData(!hideData)}
+                                color="inherit"
+                            >
+                                {hideData ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip
+                            title="Settings"
                         >
-                            <SettingsIcon />
-                        </IconButton>
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                aria-label="display settings"
+                                aria-haspopup="true"
+                                onClick={drawerOpen ? handleDrawerClose : handleDrawerOpen}
+                                color="inherit"
+                            >
+                                <SettingsIcon />
+                            </IconButton>
+                        </Tooltip>
                     </Box>
                 </Toolbar>
             </AppBar>
@@ -160,10 +230,62 @@ export default function PrimarySearchAppBar({
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
+                <Box
+                    display="flex"
+                    justifyContent={"flex-end"}
+                >
+                    <FormGroup>
+                        <FormControlLabel control={<Switch
+                            checked={hideData}
+                            onChange={() => setHideData(!hideData)}
+                        />} label="Hide data" />
+                    </FormGroup>
+                </Box>
+                <Divider />
                 <StatList stats={stats} setStats={setStats} />
                 <Divider />
                 <TableChartList tablesCharts={tablesCharts} setTablesCharts={setTablesCharts} />
                 <Divider />
+                <ListSubheader sx={{
+                    lineHeight: '24px',
+                    fontWeight: 700,
+                    textAlign: 'left',
+                }}>Theme</ListSubheader>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginTop: '1rem',
+                    }}
+                >
+                    <CirclePicker
+                        color={primaryColor}
+                        onChangeComplete={(color) => {
+                            setPrimaryColor(color.hex);
+                        }}
+                    />
+
+                </Box>
+                <Box
+                    sx={{
+                        margin: '1rem',
+                    }}
+                >
+                    <FormGroup>
+                        <FormControlLabel
+                            control={<MaterialUISwitch
+                                sx={{ m: 1 }}
+                                checked={darkMode}
+                                onChange={() => {
+                                    setDarkMode(!darkMode)
+                                }
+                                }
+                            />}
+                            label="Dark mode"
+                        />
+                    </FormGroup>
+                </Box>
             </Drawer>
             <MainContentBox drawerOpen={drawerOpen}>
                 {hideData ? null : children}
