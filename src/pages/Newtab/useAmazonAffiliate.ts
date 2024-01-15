@@ -61,8 +61,8 @@ export function useGetTodaysReports(): UseQueryResult<{
         onError: () => {
             console.error('Something went wrong while fetching the live deals');
         },
-        // refetch every 30 seconds
-        refetchInterval: 1000 * 30
+        // refetch every 15 seconds
+        refetchInterval: 1000 * 15
     });
 }
 
@@ -99,7 +99,7 @@ export function useGetTodaysBounties(): UseQueryResult<{
         onError: () => {
             console.error('Something went wrong while fetching the live deals');
         },
-        // refetch every 30 seconds
-        refetchInterval: 1000 * 30
+        // refetch every 15 seconds
+        refetchInterval: 1000 * 15
     });
 }

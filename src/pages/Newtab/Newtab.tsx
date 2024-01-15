@@ -332,7 +332,7 @@ const Newtab = () => {
                 <CardContent sx={{
                   minHeight: '128px',
                 }}>
-                  {!isLoading ? <>
+                  {!isLoading && organizedReports?.totalProfit ? <>
                     <Typography variant="h5" component="div">
                       Total Profit
                     </Typography>
@@ -340,6 +340,7 @@ const Newtab = () => {
                       <AnimatedCounter
                         value={organizedReports?.totalProfit || 0}
                         formattingFn={formatPrice}
+                        decimals={2}
                       />
                     </Typography>
                   </> : <CircularProgress />}
@@ -362,6 +363,7 @@ const Newtab = () => {
                       <AnimatedCounter
                         value={organizedReports?.totalSalesRevenue || 0}
                         formattingFn={formatPrice}
+                        decimals={2}
                       />
                     </Typography>
                   </> : <CircularProgress />}
@@ -376,12 +378,14 @@ const Newtab = () => {
                 <CardContent sx={{
                   minHeight: '128px',
                 }}>
-                  {!isLoading && organizedReports?.totalItemsPurchased ? <>
+                  {!isLoading ? <>
                     <Typography variant="h5" component="div">
-                      Total Items Sold
+                      Total Items Ordered
                     </Typography>
                     <Typography variant="h3" component="div">
-                      <AnimatedCounter value={organizedReports?.totalItemsPurchased || 0} />
+                      <AnimatedCounter
+                        value={organizedReports?.totalItemsPurchased || 0}
+                      />
                     </Typography>
                   </> : <CircularProgress />}
                 </CardContent>
