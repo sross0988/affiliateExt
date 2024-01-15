@@ -11,20 +11,11 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import Typography from '@mui/material/Typography';
 import useLocalStorage from './useLocalStorage';
 import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import CloseIcon from '@mui/icons-material/Close';
-import { SUPPORTED_STATS } from './constants';
-import { Check } from '@mui/icons-material';
-import { OrganizedReportType } from './utils';
+import StatList from './StatList';
 
-const drawerWidth = 240;
+const drawerWidth = 440;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
@@ -159,35 +150,8 @@ export default function PrimarySearchAppBar({ children, stats, setStats }: {
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
-                <List>
-                    <ListItem key="First" disablePadding>
-                        <ListItemText primary={'Stats'} />
-                    </ListItem>
-                    <Divider />
-                    {SUPPORTED_STATS.map((stat, index) => (
-                        <ListItem key={stat.statId} disablePadding onClick={() => handleToggleStat(stat.statId)}>
-                            <ListItemButton>
-                                {stats.includes(stat.statId) ? <ListItemIcon>
-                                    <Check />
-                                </ListItemIcon> : null}
-                                <ListItemText primary={stat.name} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
+                <StatList stats={stats} setStats={setStats} />
                 <Divider />
-                <List>
-                    {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
             </Drawer>
             <MainContentBox drawerOpen={drawerOpen}>
                 {hideData ? null : children}

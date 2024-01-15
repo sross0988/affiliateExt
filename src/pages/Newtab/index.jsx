@@ -15,7 +15,7 @@ const queryClient = new QueryClient();
 const theme = createTheme({
     palette: {
         primary: {
-            main: '#392e50',
+            main: (process.env.NODE_ENV === 'development') ? '#283593' : '#392e50',
         },
         // You can customize the theme further
     },
