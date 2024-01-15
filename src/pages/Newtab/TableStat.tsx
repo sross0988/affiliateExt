@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import './Newtab.css';
 import './Newtab.scss';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { OrganizedReportType, SummarySaleType } from './utils';
 import useLocalStorage from './useLocalStorage';
 
@@ -82,6 +83,7 @@ const TableStat = ({ tableConfig, organizedReports }: {
                                                 active={sort === column.id}
                                                 direction={sort === column.id ? sortDirection : 'desc'}
                                                 onClick={createSortHandler(column.id)}
+                                                IconComponent={ArrowUpwardIcon}
                                             >
                                                 {column.name}
                                             </TableSortLabel>

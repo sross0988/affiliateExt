@@ -36,7 +36,6 @@ import AnimatedStat from './AnimatedStat';
 // Fix hide data switch style
 // Add hide data switch to the drawer menu
 // Fix eslint errors
-// Fix loading state
 */
 
 const Newtab = () => {

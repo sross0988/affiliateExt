@@ -1,6 +1,7 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import _ from 'lodash';
+
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -11,27 +12,6 @@ import Switch from '@mui/material/Switch';
 import { ListItemIcon, Tooltip } from '@mui/material';
 import { SUPPORTED_TABLES_CHARTS } from './constants';
 
-/*
-// TODO: Map tracking ids to names
-// Reset all saved data
-// Change the color of the app
-// Dark mode
-// Real time items table
-// Category table
-// Add collapse to all tables
-// Add at least one chart
-// Add custom revenue
-// Double check all the data
-// Offline status
-// You are not logged in status
-// Clean up code
-// Fix the way that the arrow is displayed on tables
-// Custom height for the tables
-// Masony layout for the dashboard
-// Fix hide data switch style
-// Add hide data switch to the drawer menu
-// Fix eslint errors
-*/
 
 export default function TableChartList({
     tablesCharts,
@@ -101,6 +81,7 @@ export default function TableChartList({
                                                     e.preventDefault();
                                                     e.stopPropagation();
                                                     handleToggleTableChart(tableChart.id)
+
                                                 }}
                                             >
                                                 <ListItemText id={tableChart.id} primary={tableChart.name} />
