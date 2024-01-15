@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
+import Box, { BoxProps as MuiBoxProps } from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
@@ -16,7 +16,6 @@ import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -35,17 +34,60 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     justifyContent: 'flex-end',
 }));
 
+interface AppBarProps extends MuiAppBarProps {
+    drawerOpen?: boolean;
+}
+
+
+interface BoxProps extends MuiBoxProps {
+    drawerOpen?: boolean;
+}
+
+const AppBar = styled(MuiAppBar, {
+    shouldForwardProp: (prop) => prop !== 'drawerOpen',
+})<AppBarProps>(({ theme, drawerOpen }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(drawerOpen && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginRight: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
+const MainContentBox = styled(Box, {
+    shouldForwardProp: (prop) => prop !== 'drawerOpen',
+})<BoxProps>(({ theme, drawerOpen }) => ({
+    transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    ...(drawerOpen && {
+        width: `calc(100% - ${drawerWidth}px)`,
+        marginRight: `${drawerWidth}px`,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.easeOut,
+            duration: theme.transitions.duration.enteringScreen,
+        }),
+    }),
+}));
+
 export default function PrimarySearchAppBar({ children }: { children: React.ReactNode }) {
     const [hideData, setHideData] = useLocalStorage('hideData', false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const [open, setOpen] = React.useState(false);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
-        setOpen(true);
+        setDrawerOpen(true);
     };
 
     const handleDrawerClose = () => {
-        setOpen(false);
+        setDrawerOpen(false);
     };
 
     const isMenuOpen = Boolean(anchorEl);
@@ -83,7 +125,7 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" drawerOpen={drawerOpen}>
                 <Toolbar>
                     <Typography
                         variant="h6"
@@ -112,7 +154,7 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
                             aria-label="display settings"
                             aria-controls={menuId}
                             aria-haspopup="true"
-                            onClick={handleProfileMenuOpen}
+                            onClick={drawerOpen ? handleDrawerClose : handleDrawerOpen}
                             color="inherit"
                         >
                             <SettingsIcon />
@@ -131,8 +173,8 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
                     },
                 }}
                 variant="persistent"
-                anchor="left"
-                open={open}
+                anchor="right"
+                open={drawerOpen}
             >
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
@@ -166,7 +208,9 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
                     ))}
                 </List>
             </Drawer>
-            {hideData ? null : children}
+            <MainContentBox drawerOpen={drawerOpen}>
+                {hideData ? null : children}
+            </MainContentBox>
         </Box>
     );
 }

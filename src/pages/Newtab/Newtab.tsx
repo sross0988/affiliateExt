@@ -19,6 +19,7 @@ import {
 import { useGetTodaysReports, useGetTodaysBounties, SaleType, BountyType } from './useAmazonAffiliate';
 // import logo from '../../assets/img/logo.svg';
 import PrimarySearchAppBar from './app';
+import AnimatedCounter from './AnimatedCounter';
 import './Newtab.css';
 import './Newtab.scss';
 import useLocalStorage from './useLocalStorage';
@@ -336,7 +337,10 @@ const Newtab = () => {
                       Total Profit
                     </Typography>
                     <Typography variant="h3" component="div">
-                      {formatPrice(organizedReports?.totalProfit)}
+                      <AnimatedCounter
+                        value={organizedReports?.totalProfit || 0}
+                        formattingFn={formatPrice}
+                      />
                     </Typography>
                   </> : <CircularProgress />}
                 </CardContent>
@@ -355,7 +359,10 @@ const Newtab = () => {
                       Total Sales Revenue
                     </Typography>
                     <Typography variant="h3" component="div">
-                      {formatPrice(organizedReports?.totalSalesRevenue)}
+                      <AnimatedCounter
+                        value={organizedReports?.totalSalesRevenue || 0}
+                        formattingFn={formatPrice}
+                      />
                     </Typography>
                   </> : <CircularProgress />}
                 </CardContent>
@@ -369,12 +376,12 @@ const Newtab = () => {
                 <CardContent sx={{
                   minHeight: '128px',
                 }}>
-                  {!isLoading ? <>
+                  {!isLoading && organizedReports?.totalItemsPurchased ? <>
                     <Typography variant="h5" component="div">
                       Total Items Sold
                     </Typography>
                     <Typography variant="h3" component="div">
-                      {organizedReports?.totalItemsPurchased || 0}
+                      <AnimatedCounter value={organizedReports?.totalItemsPurchased || 0} />
                     </Typography>
                   </> : <CircularProgress />}
                 </CardContent>
@@ -393,7 +400,7 @@ const Newtab = () => {
                       Total Sales Lines
                     </Typography>
                     <Typography variant="h3" component="div">
-                      {organizedReports?.totalSalesLines || 0}
+                      <AnimatedCounter value={organizedReports?.totalSalesLines || 0} />
                     </Typography>
                   </> : <CircularProgress />}
                 </CardContent>
