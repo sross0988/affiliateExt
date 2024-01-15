@@ -62,7 +62,7 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
         description: 'Data organized by Tracking ID.',
         columns: [
             {
-                name: 'Tag',
+                name: 'Tracking ID',
                 id: 'tag',
                 sortable: true,
                 align: 'left',

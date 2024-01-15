@@ -76,14 +76,22 @@ const Newtab = () => {
                 if (!tableConfig) {
                   return null;
                 }
+
+
+                const styles: React.CSSProperties = {};
+
+                if (isLoading) {
+                  styles['display'] = 'flex';
+                  styles['alignItems'] = 'center';
+                  styles['justifyContent'] = 'center';
+                }
+
                 return (
                   <Grid item xs={12} lg={6} >
                     <Card raised
                       sx={{
                         minHeight: '440px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
+                        ...styles
                       }}
                     >
                       {isLoading ? <CircularProgress /> : <TableStat tableConfig={tableConfig} organizedReports={organizedReports} />}

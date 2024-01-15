@@ -37,15 +37,21 @@ const AnimatedStat = ({ statId, organizedReports, isLoading }: {
 
     const statName = stat.name;
 
+    const styles: React.CSSProperties = {};
+
+    if (isLoading) {
+        styles['display'] = 'flex';
+        styles['alignItems'] = 'center';
+        styles['justifyContent'] = 'center';
+    }
+
     return (
         <Card
             raised
         >
             <CardContent sx={{
                 minHeight: '128px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                ...styles
             }}>
                 {!isLoading && organizedReports?.totalProfit ? <>
                     <Typography variant="h5" component="div">
