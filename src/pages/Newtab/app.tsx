@@ -9,19 +9,20 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Typography from '@mui/material/Typography';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
 import useLocalStorage from './useLocalStorage';
 import Drawer from '@mui/material/Drawer';
 import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
+import CloseIcon from '@mui/icons-material/Close';
+import { SUPPORTED_STATS } from './constants';
+import { Check } from '@mui/icons-material';
+import { OrganizedReportType } from './utils';
 
 const drawerWidth = 240;
 
@@ -77,9 +78,12 @@ const MainContentBox = styled(Box, {
     }),
 }));
 
-export default function PrimarySearchAppBar({ children }: { children: React.ReactNode }) {
+export default function PrimarySearchAppBar({ children, stats, setStats }: {
+    children: React.ReactNode;
+    stats: string[];
+    setStats: (stats: string[]) => void;
+}) {
     const [hideData, setHideData] = useLocalStorage('hideData', false);
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
 
     const handleDrawerOpen = () => {
@@ -90,38 +94,13 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
         setDrawerOpen(false);
     };
 
-    const isMenuOpen = Boolean(anchorEl);
-
-    const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const menuId = 'primary-search-account-menu';
-    const renderMenu = (
-        <Menu
-            anchorEl={anchorEl}
-            anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            id={menuId}
-            keepMounted
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-            }}
-            open={isMenuOpen}
-            onClose={handleMenuClose}
-        >
-            <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-        </Menu>
-    );
-
+    const handleToggleStat = (statId: string) => {
+        if (stats.includes(statId)) {
+            setStats(stats.filter(stat => stat !== statId));
+        } else {
+            setStats([...stats, statId]);
+        }
+    }
 
     return (
         <Box sx={{ flexGrow: 1 }}>
@@ -152,7 +131,6 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
                             size="large"
                             edge="end"
                             aria-label="display settings"
-                            aria-controls={menuId}
                             aria-haspopup="true"
                             onClick={drawerOpen ? handleDrawerClose : handleDrawerOpen}
                             color="inherit"
@@ -162,7 +140,6 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
                     </Box>
                 </Toolbar>
             </AppBar>
-            {renderMenu}
             <Drawer
                 sx={{
                     width: drawerWidth,
@@ -178,18 +155,22 @@ export default function PrimarySearchAppBar({ children }: { children: React.Reac
             >
                 <DrawerHeader>
                     <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
+                        <CloseIcon />
                     </IconButton>
                 </DrawerHeader>
                 <Divider />
                 <List>
-                    {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
+                    <ListItem key="First" disablePadding>
+                        <ListItemText primary={'Stats'} />
+                    </ListItem>
+                    <Divider />
+                    {SUPPORTED_STATS.map((stat, index) => (
+                        <ListItem key={stat.statId} disablePadding onClick={() => handleToggleStat(stat.statId)}>
                             <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
+                                {stats.includes(stat.statId) ? <ListItemIcon>
+                                    <Check />
+                                </ListItemIcon> : null}
+                                <ListItemText primary={stat.name} />
                             </ListItemButton>
                         </ListItem>
                     ))}

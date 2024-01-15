@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import CountUp from 'react-countup';
 
 interface AnimatedCounterProps {
@@ -7,14 +7,12 @@ interface AnimatedCounterProps {
     decimals?: number;
 }
 
-
 const AnimatedCounter: React.FC<AnimatedCounterProps> = ({ value, formattingFn = n => `${n}`, decimals = 0 }) => {
     const prevValueRef = useRef<number>(0);
 
     useEffect(() => {
         prevValueRef.current = value;
     }, [value]);
-
 
     return (
         <div>
