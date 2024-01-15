@@ -71,6 +71,27 @@ export const calculateProfit = (rows: SummarySaleType[]) => {
     return profit;
 };
 
+export const TAG = 'jd-daily-20';
+
+
+export interface ColumnType {
+    name: string;
+    id: string;
+    sortable?: boolean;
+    format?: (value: any, row: any) => any;
+    align?: 'left' | 'right';
+}
+
+export interface TableChartConfigType {
+    id: string;
+    name: string;
+    type: string;
+    columns: ColumnType[];
+    defaultSort: string;
+    defaultSortDirection: 'asc' | 'desc';
+    description: string;
+}
+
 export const formatPrice = (pricePassed: number | string): string => {
     const price = Number(pricePassed);
     if (Number.isNaN(price) || !price?.toFixed) return '';

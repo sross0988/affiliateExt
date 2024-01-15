@@ -9,22 +9,43 @@ import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Switch from '@mui/material/Switch';
 import { ListItemIcon, Tooltip } from '@mui/material';
-import { SUPPORTED_STATS } from './constants';
-import { StatConfigType } from './utils';
+import { SUPPORTED_TABLES_CHARTS } from './constants';
 
-export default function StatList({
-    stats,
-    setStats
+/*
+// TODO: Map tracking ids to names
+// Reset all saved data
+// Change the color of the app
+// Dark mode
+// Real time items table
+// Category table
+// Add collapse to all tables
+// Add at least one chart
+// Add custom revenue
+// Double check all the data
+// Offline status
+// You are not logged in status
+// Clean up code
+// Fix the way that the arrow is displayed on tables
+// Custom height for the tables
+// Masony layout for the dashboard
+// Fix hide data switch style
+// Add hide data switch to the drawer menu
+// Fix eslint errors
+*/
+
+export default function TableChartList({
+    tablesCharts,
+    setTablesCharts
 }: {
-    stats: string[];
-    setStats: (stats: string[]) => void;
+    tablesCharts: string[];
+    setTablesCharts: (stats: string[]) => void;
 }) {
 
-    const handleToggleStat = (statId: string) => {
-        if (stats.includes(statId)) {
-            setStats(stats.filter(stat => stat !== statId));
+    const handleToggleTableChart = (id: string) => {
+        if (tablesCharts.includes(id)) {
+            setTablesCharts(tablesCharts.filter(stat => stat !== id));
         } else {
-            setStats([...stats, statId]);
+            setTablesCharts([...tablesCharts, id]);
         }
     }
 
@@ -32,15 +53,15 @@ export default function StatList({
         if (!result.destination) {
             return;
         }
-        const items = Array.from(stats);
+        const items = Array.from(tablesCharts);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
-        setStats(items);
+        setTablesCharts(items);
     }
 
-    const supportedStatsNotPresent = SUPPORTED_STATS.filter(stat => !stats.includes(stat.statId)).map(stat => stat.statId);
-    const statsToRender = [...stats, ...supportedStatsNotPresent];
+    const supportedStatsNotPresent = SUPPORTED_TABLES_CHARTS.filter(stat => !tablesCharts.includes(stat.id)).map(stat => stat.id);
+    const statsToRender = [...tablesCharts, ...supportedStatsNotPresent];
 
     return (
         <DragDropContext onDragEnd={onDragEnd}>
@@ -54,38 +75,38 @@ export default function StatList({
                             lineHeight: '24px',
                             fontWeight: 700,
                             textAlign: 'left',
-                        }}>Stats</ListSubheader>}
+                        }}>Tables & Charts</ListSubheader>}
                         dense
                     >
-                        {statsToRender.map((statId, index) => {
-                            const stat = _.find(SUPPORTED_STATS, { statId }) as StatConfigType | undefined;
-                            if (!stat) {
+                        {statsToRender.map((id, index) => {
+                            const tableChart = _.find(SUPPORTED_TABLES_CHARTS, { id });
+                            if (!tableChart) {
                                 return null;
                             }
                             return (<Draggable
-                                isDragDisabled={!stats.includes(stat.statId)}
-                                key={stat.statId} draggableId={stat.statId} index={index}>
+                                isDragDisabled={!tablesCharts.includes(tableChart.id)}
+                                key={tableChart.id} draggableId={tableChart.id} index={index}>
                                 {(provided, snapshot) => (
-                                    <Tooltip title={stat.description} placement='left'>
+                                    <Tooltip title={tableChart.description} placement='left'>
                                         <ListItem
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
                                         >
-                                            {stats.includes(stat.statId) ? <ListItemIcon>
+                                            {tablesCharts.includes(tableChart.id) ? <ListItemIcon>
                                                 <DragHandleIcon />
                                             </ListItemIcon> : null}
                                             <ListItemButton
                                                 onClick={(e) => {
                                                     e.preventDefault();
                                                     e.stopPropagation();
-                                                    handleToggleStat(stat.statId)
+                                                    handleToggleTableChart(tableChart.id)
                                                 }}
                                             >
-                                                <ListItemText id={stat.statId} primary={stat.name} />
+                                                <ListItemText id={tableChart.id} primary={tableChart.name} />
                                                 <Switch
                                                     edge="end"
-                                                    checked={stats.includes(stat.statId)}
+                                                    checked={tablesCharts.includes(tableChart.id)}
                                                     inputProps={{
                                                         'aria-labelledby': 'switch-list-label-wifi',
                                                     }}

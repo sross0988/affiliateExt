@@ -14,6 +14,7 @@ import Drawer from '@mui/material/Drawer';
 import Divider from '@mui/material/Divider';
 import CloseIcon from '@mui/icons-material/Close';
 import StatList from './StatList';
+import TableChartList from './TableChartList';
 
 const drawerWidth = 440;
 
@@ -69,10 +70,19 @@ const MainContentBox = styled(Box, {
     }),
 }));
 
-export default function PrimarySearchAppBar({ children, stats, setStats }: {
+export default function PrimarySearchAppBar({
+    children,
+    stats,
+    setStats,
+    tablesCharts,
+    setTablesCharts
+}: {
     children: React.ReactNode;
     stats: string[];
     setStats: (stats: string[]) => void;
+    tablesCharts: string[];
+    setTablesCharts: (tablesCharts: string[]) => void;
+
 }) {
     const [hideData, setHideData] = useLocalStorage('hideData', false);
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -151,6 +161,8 @@ export default function PrimarySearchAppBar({ children, stats, setStats }: {
                 </DrawerHeader>
                 <Divider />
                 <StatList stats={stats} setStats={setStats} />
+                <Divider />
+                <TableChartList tablesCharts={tablesCharts} setTablesCharts={setTablesCharts} />
                 <Divider />
             </Drawer>
             <MainContentBox drawerOpen={drawerOpen}>
