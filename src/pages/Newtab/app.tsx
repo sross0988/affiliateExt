@@ -156,16 +156,6 @@ export default function PrimarySearchAppBar({
         setDrawerOpen(false);
     };
 
-    const handleToggleStat = (statId: string) => {
-        if (stats.includes(statId)) {
-            setStats(stats.filter(stat => stat !== statId));
-        } else {
-            setStats([...stats, statId]);
-        }
-    }
-
-
-
     return (
         <Box sx={{ flexGrow: 1 }}>
             <AppBar position="static" drawerOpen={drawerOpen}>
@@ -250,6 +240,7 @@ export default function PrimarySearchAppBar({
                     lineHeight: '24px',
                     fontWeight: 700,
                     textAlign: 'left',
+                    marginTop: '1rem',
                 }}>Theme</ListSubheader>
                 <Box
                     sx={{

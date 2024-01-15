@@ -68,14 +68,15 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
                 align: 'left',
             },
             {
-                name: 'Total Ordered',
+                name: 'Total Items Ordered',
                 id: 'totalItemsPurchased',
                 sortable: true,
                 align: 'right',
             },
+
             {
-                name: 'Total Sales Revenue',
-                id: 'totalSalesRevenue',
+                name: 'Total Profit',
+                id: 'totalProfit',
                 sortable: true,
                 format: (value: number) => {
                     return formatPrice(value);
@@ -83,7 +84,7 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
                 align: 'right',
             },
             {
-                name: 'Total Profit',
+                name: 'Total Item Order Profit',
                 id: 'profit',
                 sortable: true,
                 format: (value: number) => {
@@ -99,7 +100,16 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
                     return formatPrice(value);
                 },
                 align: 'right',
-            }
+            },
+            {
+                name: 'Total Sales Revenue',
+                id: 'totalSalesRevenue',
+                sortable: true,
+                format: (value: number) => {
+                    return formatPrice(value);
+                },
+                align: 'right',
+            },
         ],
         defaultSort: 'totalItemsPurchased',
         defaultSortDirection: 'desc',

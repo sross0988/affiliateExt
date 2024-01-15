@@ -55,7 +55,7 @@ export default function TableChartList({
                             lineHeight: '24px',
                             fontWeight: 700,
                             textAlign: 'left',
-                        }}>Tables & Charts</ListSubheader>}
+                        }}>Tables</ListSubheader>}
                         dense
                     >
                         {statsToRender.map((id, index) => {

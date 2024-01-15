@@ -16,10 +16,8 @@ import {
 import './Newtab.css';
 import './Newtab.scss';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { OrganizedReportType, SummarySaleType } from './utils';
+import { OrganizedReportType, SummarySaleType, TAG } from './utils';
 import useLocalStorage from './useLocalStorage';
-
-const TAG = 'jd-daily-20';
 
 export interface ColumnType {
     name: string;
@@ -64,7 +62,11 @@ const TableStat = ({ tableConfig, organizedReports }: {
     return (
         <Card raised>
             <CardContent>
-                <Typography variant="h5" component="div">
+                <Typography variant="h5" component="div"
+                    sx={{
+                        marginBottom: '1rem'
+                    }}
+                >
                     {tableConfig.name}
                 </Typography>
                 <TableContainer component={Paper} sx={{ maxHeight: 440 }}>

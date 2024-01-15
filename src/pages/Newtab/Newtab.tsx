@@ -21,24 +21,25 @@ import TableStat from './TableStat';
 import AnimatedStat from './AnimatedStat';
 import defaultTheme from './theme';
 
+
 /*
-// TODO: Map tracking ids to names
-// Reset all saved data
-// Change the color of the app
-// Dark mode
+// TODO: 
+// Map tracking ids to names
 // Real time items table
 // Category table
+// Custom profit table
 // Add collapse to all tables
-// Add at least one chart
-// Add custom revenue
+// Add custom revenue table
 // Double check all the data
+// Download the data
+
+
 // Offline status
 // You are not logged in status
+// Remove chart
 // Clean up code
-// Fix the way that the arrow is displayed on tables
 // Custom height for the tables
 // Masony layout for the dashboard
-// Fix hide data switch style
 // Fix eslint errors
 */
 
@@ -52,6 +53,8 @@ const Newtab = () => {
   const isLoading = isLoadingReports || isLoadingBounties;
   // Get OS-level preference for dark mode
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  console.log('todaysBounties', todaysBounties);
 
   // state: boolean ; true == use dark mode
   const [darkMode, setDarkMode] = useLocalStorage('dark-mode', prefersDarkMode);
@@ -69,7 +72,7 @@ const Newtab = () => {
             main: primaryColor,
           },
           mode: themeString(darkMode),
-        }
+        },
       })
     ,
     [darkMode, primaryColor]
@@ -80,7 +83,6 @@ const Newtab = () => {
 
     <ThemeProvider theme={theme}>
       <CssBaseline /> {/* This is for a consistent baseline style */}
-
       <div className="App">
         <PrimarySearchAppBar
           setStats={setStats}

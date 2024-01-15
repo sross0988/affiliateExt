@@ -125,6 +125,7 @@ export interface SummaryTagType {
     profit: number;
     bountyEarnings: number;
     bountyEvents: number;
+    totalProfit: number;
 }
 
 export interface OrganizedReportType {
@@ -277,6 +278,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
                 profit: 0,
                 bountyEarnings: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
                 bountyEvents: bountiesByTag[tag].length,
+                totalProfit: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
             });
         }
     }
@@ -297,6 +299,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
             tag: report.lines[0].tracking_id,
             bountyEarnings: totalBountyProfit,
             bountyEvents: bountiesByTrackingId.length,
+            totalProfit: getProfitFromRows(report.lines) + totalBountyProfit,
         });
     }
 
