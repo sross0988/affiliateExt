@@ -12,6 +12,29 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
         name: 'Today\'s Sales by Items',
         description: 'Sales data organized by item.',
         type: 'table',
+        uniqueKey: 'asin',
+        collapseColumns: [
+            {
+                id: 'tracking_id',
+                name: 'Tracking ID',
+            },
+            {
+                id: 'merchant_name',
+                name: 'Merchant',
+            },
+            {
+                id: 'ordered_items',
+                name: 'Total Items Ordered',
+            },
+            {
+                id: 'price',
+                name: 'Price',
+                format: (value: number) => {
+                    return formatPrice(value);
+                },
+                align: 'right',
+            },
+        ],
         columns: [
             {
                 name: 'Product Title',
@@ -60,6 +83,40 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
         id: 'reportRowsByTag',
         type: 'table',
         description: 'Data organized by Tracking ID.',
+        uniqueKey: 'tag',
+        collapseColumns: [
+            {
+                id: 'product_title',
+                name: 'Product Title',
+                format: (value: string, row: any) => {
+                    return <Link
+                        href={`https://www.amazon.com/dp/${row.asin}?tag=${TAG}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >{value}</Link>
+                }
+            },
+            {
+                id: 'ordered_items',
+                name: 'Total Items Ordered',
+            },
+            {
+                id: 'price',
+                name: 'Price',
+                format: (value: number) => {
+                    return formatPrice(value);
+                },
+                align: 'right',
+            },
+            {
+                id: 'product_category',
+                name: 'Product Category',
+            },
+            {
+                id: 'merchant_name',
+                name: 'Merchant',
+            },
+        ],
         columns: [
             {
                 name: 'Tracking ID',

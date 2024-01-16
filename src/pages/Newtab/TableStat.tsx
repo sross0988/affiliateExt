@@ -1,6 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import {
+    Box,
     Card,
     CardContent,
     Typography,
@@ -12,42 +13,104 @@ import {
     TableBody,
     TableSortLabel,
     Paper,
+    IconButton,
+    Collapse,
 } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import './Newtab.css';
 import './Newtab.scss';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { OrganizedReportType, SummarySaleType, TAG } from './utils';
+import { OrganizedReportType, SummarySaleType, TableChartConfigType } from './utils';
 import useLocalStorage from './useLocalStorage';
 
-export interface ColumnType {
-    name: string;
-    id: string;
-    sortable?: boolean;
-    format?: (value: any, row: any) => any;
-    align?: 'left' | 'right';
-}
-
-export interface TableChartConfigType {
-    id: string;
-    name: string;
-    type: string;
-    columns: ColumnType[];
-    defaultSort: string;
-    defaultSortDirection: 'asc' | 'desc';
-}
-
 {/* <TableStat tableConfig={SUPPORTED_TABLES_CHARTS[0]} organizedReports={organizedReports}/> */ }
+
+
+const TableStatRow = ({ row, tableConfig, uniqueKey }: { row: SummarySaleType; tableConfig: TableChartConfigType; uniqueKey: string; }) => {
+    const [open, setOpen] = useLocalStorage(`${uniqueKey}_open`, false);
+    return (
+        <>
+            <TableRow
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+            >
+                <TableCell>
+                    <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => setOpen(!open)}
+                    >
+                        {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                    </IconButton>
+                </TableCell>
+                {tableConfig.columns.map((column) => {
+                    // @ts-ignore
+                    const fmtData = column.format ? column.format(row[column.id], row) : row[column.id];
+                    return (
+                        <TableCell
+                            key={column.id}
+                            align={column.align || 'left'}
+                        >{fmtData}</TableCell>
+                    )
+                })}
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={tableConfig.columns.length + 1}>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                            <Table size="small">
+                                <TableHead>
+                                    <TableRow>
+                                        {(tableConfig?.collapseColumns || []).map((column) => {
+                                            return (
+                                                <TableCell
+                                                    key={column.id}
+                                                    align={column.align || 'left'}
+                                                >{column.name}</TableCell>
+                                            )
+                                        })}
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {(row.lines || []).map((line) => {
+                                        return (<TableRow>
+                                            {(tableConfig?.collapseColumns || []).map((column) => {
+                                                // @ts-ignore
+                                                const fmtData = column.format ? column.format(line[column.id], row) : line[column.id];
+                                                return (
+                                                    <TableCell
+                                                        key={column.id}
+                                                        align={column.align || 'left'}
+                                                    >{fmtData}</TableCell>
+                                                )
+                                            })}
+                                        </TableRow>);
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+        </>
+
+
+    )
+}
 
 const TableStat = ({ tableConfig, organizedReports }: {
     tableConfig: TableChartConfigType;
     organizedReports: OrganizedReportType;
 }) => {
+    const tableId = `${tableConfig.id}`;
     const [sort, setSort] = useLocalStorage(`${tableConfig.id}_sort`, tableConfig.defaultSort);
     const [sortDirection, setSortDirection] = useLocalStorage<'asc' | 'desc'>(`${tableConfig.id}_sortDirection`, tableConfig.defaultSortDirection);
     // @ts-ignore
     const data = organizedReports[tableConfig.id];
 
     const sortedData = _.orderBy(data, [sort], [sortDirection]);
+
+    const uniqueKey = tableConfig.uniqueKey || 'asin';
 
     const createSortHandler =
         (property: string) => (event: React.MouseEvent<unknown>) => {
@@ -73,8 +136,8 @@ const TableStat = ({ tableConfig, organizedReports }: {
                     <Table stickyHeader sx={{ minWidth: 650 }} size="small" aria-label={tableConfig.name}>
                         <TableHead>
                             <TableRow>
+                                <TableCell />
                                 {tableConfig.columns.map((column) => {
-
                                     return (
                                         <TableCell
                                             key={column.id}
@@ -96,22 +159,15 @@ const TableStat = ({ tableConfig, organizedReports }: {
                         </TableHead>
                         <TableBody>
                             {(sortedData || []).map((row: SummarySaleType, i: number) => {
+                                // @ts-ignore
+                                const key = `${row.title}-${row?.[uniqueKey] || i}`;
                                 return (
-                                    <TableRow
-                                        key={`${row.title}-${row.asin}-${i}`}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        {tableConfig.columns.map((column) => {
-                                            // @ts-ignore
-                                            const fmtData = column.format ? column.format(row[column.id], row) : row[column.id];
-                                            return (
-                                                <TableCell
-                                                    key={column.id}
-                                                    align={column.align || 'left'}
-                                                >{fmtData}</TableCell>
-                                            )
-                                        })}
-                                    </TableRow>
+                                    <TableStatRow
+                                        row={row}
+                                        tableConfig={tableConfig}
+                                        key={key}
+                                        uniqueKey={key}
+                                    />
                                 );
                             })}
                         </TableBody>

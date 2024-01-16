@@ -82,14 +82,24 @@ export interface ColumnType {
     align?: 'left' | 'right';
 }
 
+export interface CollapseColumnType {
+    name: string;
+    id: string;
+    // sortable?: boolean;
+    format?: (value: any, row: any) => any;
+    align?: 'left' | 'right';
+}
+
 export interface TableChartConfigType {
     id: string;
+    uniqueKey: string;
     name: string;
     type: string;
     columns: ColumnType[];
     defaultSort: string;
     defaultSortDirection: 'asc' | 'desc';
     description: string;
+    collapseColumns?: CollapseColumnType[];
 }
 
 export const formatPrice = (pricePassed: number | string): string => {
@@ -109,6 +119,7 @@ export interface SummarySaleType {
     asin: string;
     category: string;
     profit: number;
+    lines: Array<SaleType | BountyType>;
 }
 
 export interface StatConfigType {
@@ -126,6 +137,7 @@ export interface SummaryTagType {
     bountyEarnings: number;
     bountyEvents: number;
     totalProfit: number;
+    lines: Array<SaleType | BountyType>;
 }
 
 export interface OrganizedReportType {
@@ -251,6 +263,8 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
     for (let i = 0; i < Object.values(organizedReports.reportsByAsin).length; i++) {
         const report = Object.values(organizedReports.reportsByAsin)[i];
 
+
+
         organizedReports.reportRowsByASIN.push({
             totalSalesRevenue: report.totalSalesRevenue,
             totalItemsPurchased: report.totalItemsPurchased,
@@ -258,6 +272,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
             asin: report.asin,
             category: report.lines[0].product_category,
             profit: report.totalSalesRevenue * getProfitMultiplier(report.lines[0].product_category),
+            lines: ([...report.lines]),
         });
     }
 
@@ -279,6 +294,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
                 bountyEarnings: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
                 bountyEvents: bountiesByTag[tag].reduce((acc, cur) => acc + parseInt(cur.bounty_events), 0),
                 totalProfit: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
+                lines: [...bountiesByTag[tag]],
             });
         }
     }
@@ -300,6 +316,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
             bountyEarnings: totalBountyProfit,
             bountyEvents: bountiesByTrackingId.reduce((acc, cur) => acc + parseInt(cur.bounty_events), 0),
             totalProfit: getProfitFromRows(report.lines) + totalBountyProfit,
+            lines: [...report.lines],
         });
     }
 
