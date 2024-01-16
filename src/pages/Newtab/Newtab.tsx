@@ -100,7 +100,7 @@ const Newtab = () => {
             <Grid container spacing={2} >
               {stats.map((statId) => {
                 return (
-                  <Grid item xs={12} sm={6} md={6} lg={3} >
+                  <Grid item xs={12} sm={6} md={6} lg={3} key={statId}>
                     <AnimatedStat
                       statId={statId}
                       organizedReports={organizedReports}

@@ -8,6 +8,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -170,9 +171,19 @@ export default function PrimarySearchAppBar({
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
+                        <IconButton
+                            size="large"
+                            edge="end"
+                            aria-label="notifications"
+                            aria-haspopup="true"
+                            color="inherit"
+                        >
+                            <NotificationsIcon />
+                        </IconButton>
                         <Tooltip
                             title={hideData ? 'Show data' : 'Hide data'}
                         >
+
                             <IconButton
                                 size="large"
                                 edge="end"
@@ -251,6 +262,7 @@ export default function PrimarySearchAppBar({
                     }}
                 >
                     <CirclePicker
+                        colors={["#f44336", "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3", "#03a9f4", "#00bcd4", "#009688", "#4caf50", "#8bc34a", "#cddc39", "#ffeb3b", "#ffc107", "#ff9800", "#ff5722", "#795548", "#607d8b"]}
                         color={primaryColor}
                         onChangeComplete={(color) => {
                             setPrimaryColor(color.hex);

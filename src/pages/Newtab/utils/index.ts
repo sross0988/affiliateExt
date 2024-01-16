@@ -277,7 +277,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
                 tag,
                 profit: 0,
                 bountyEarnings: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
-                bountyEvents: bountiesByTag[tag].length,
+                bountyEvents: bountiesByTag[tag].reduce((acc, cur) => acc + parseInt(cur.bounty_events), 0),
                 totalProfit: bountiesByTag[tag].reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0),
             });
         }
@@ -298,7 +298,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
             profit: getProfitFromRows(report.lines),
             tag: report.lines[0].tracking_id,
             bountyEarnings: totalBountyProfit,
-            bountyEvents: bountiesByTrackingId.length,
+            bountyEvents: bountiesByTrackingId.reduce((acc, cur) => acc + parseInt(cur.bounty_events), 0),
             totalProfit: getProfitFromRows(report.lines) + totalBountyProfit,
         });
     }
@@ -313,7 +313,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
 
 
     organizedReports.totalBountyEarnings = bounties.reduce((acc, cur) => acc + parseFloat(cur.bounty_earnings), 0);
-    organizedReports.numberBountyEvents = bounties.length;
+    organizedReports.numberBountyEvents = bounties.reduce((acc, cur) => acc + parseFloat(cur.bounty_events), 0);
     organizedReports.totalProfit = calculateProfit(organizedReports?.reportRowsByASIN) + organizedReports.totalBountyEarnings;
 
     return organizedReports;
