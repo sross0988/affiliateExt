@@ -5,10 +5,10 @@ import { CirclePicker } from 'react-color';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box, { BoxProps as MuiBoxProps } from '@mui/material/Box';
 import FormGroup from '@mui/material/FormGroup';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import Switch from '@mui/material/Switch';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -31,6 +31,20 @@ const DrawerHeader = styled('div')(({ theme }) => ({
     // necessary for content to be below app bar
     ...theme.mixins.toolbar,
     justifyContent: 'flex-end',
+}));
+
+const SpinningIcon = styled(RefreshIcon)(({ isLoading }: {
+    isLoading: boolean;
+}) => ({
+    animation: isLoading ? 'spin 1s linear infinite' : 'none',
+    '@keyframes spin': {
+        '0%': {
+            transform: 'rotate(0deg)',
+        },
+        '100%': {
+            transform: 'rotate(360deg)',
+        },
+    },
 }));
 
 interface AppBarProps extends MuiAppBarProps {
@@ -133,7 +147,8 @@ export default function PrimarySearchAppBar({
     primaryColor,
     setDarkMode,
     darkMode,
-
+    refresh,
+    isRefreshing
 }: {
     children: React.ReactNode;
     stats: string[];
@@ -144,6 +159,8 @@ export default function PrimarySearchAppBar({
     primaryColor: string;
     setDarkMode: (darkMode: boolean) => void;
     darkMode: boolean;
+    refresh: () => void;
+    isRefreshing: boolean;
 
 }) {
     const [hideData, setHideData] = useLocalStorage('hideData', false);
@@ -171,15 +188,20 @@ export default function PrimarySearchAppBar({
                     </Typography>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: 'flex' }}>
-                        <IconButton
-                            size="large"
-                            edge="end"
-                            aria-label="notifications"
-                            aria-haspopup="true"
-                            color="inherit"
+                        <Tooltip
+                            title="Refresh data"
                         >
-                            <NotificationsIcon />
-                        </IconButton>
+                            <IconButton
+                                size="large"
+                                edge="end"
+                                aria-label="Refresh data"
+                                aria-haspopup="true"
+                                onClick={() => refresh()}
+                                color="inherit"
+                            >
+                                <SpinningIcon isLoading={isRefreshing} />
+                            </IconButton>
+                        </Tooltip>
                         <Tooltip
                             title={hideData ? 'Show data' : 'Hide data'}
                         >

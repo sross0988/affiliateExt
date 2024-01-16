@@ -13,7 +13,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import useMediaQuery from "@mui/material/useMediaQuery";
 import './Newtab.css';
 import './Newtab.scss';
-import { getOrganizedTodaysReports, TableChartConfigType } from './utils';
+import { getOrganizedTodaysReports, TableChartConfigType, TagIdentifierType } from './utils';
 import useLocalStorage from './useLocalStorage';
 
 import { SUPPORTED_STATS, SUPPORTED_TABLES_CHARTS } from './constants';
@@ -24,13 +24,9 @@ import defaultTheme from './theme';
 
 /*
 // TODO: 
-// Map tracking ids to names
 // Real time items table
 // Category table
-// Custom profit table
-// Add collapse to all tables
-// Add custom revenue table
-// Double check all the data
+// Custom profit table - 2% etc
 // Download the data
 
 
@@ -45,16 +41,15 @@ import defaultTheme from './theme';
 
 const Newtab = () => {
   const [primaryColor, setPrimaryColor] = useLocalStorage<string>('primary_color', '#1976d2');
+  const [tagIdentities, setTagIdentities] = useLocalStorage<TagIdentifierType[]>('tag_identities_1', []);
   const [stats, setStats] = useLocalStorage<string[]>('stat_ids', [...SUPPORTED_STATS.map(stat => stat.statId)]);
   const [tablesCharts, setTablesCharts] = useLocalStorage<string[]>('table_chart_ids', [...SUPPORTED_TABLES_CHARTS.map(table => table.id)]);
-  const { data: todaysReports, isLoading: isLoadingReports } = useGetTodaysReports();
-  const { data: todaysBounties, isLoading: isLoadingBounties } = useGetTodaysBounties();
+  const { data: todaysReports, isLoading: isLoadingReports, refetch: refetchReports, isFetching: isFetchingReports } = useGetTodaysReports();
+  const { data: todaysBounties, isLoading: isLoadingBounties, refetch: refetchBounties, isFetching: isFetchingBounties } = useGetTodaysBounties();
   const organizedReports = getOrganizedTodaysReports(todaysReports?.records || [], todaysBounties?.records || []);
   const isLoading = isLoadingReports || isLoadingBounties;
   // Get OS-level preference for dark mode
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
-  console.log('todaysBounties', todaysBounties);
 
   // state: boolean ; true == use dark mode
   const [darkMode, setDarkMode] = useLocalStorage('dark-mode', prefersDarkMode);
@@ -93,6 +88,12 @@ const Newtab = () => {
           primaryColor={primaryColor}
           setDarkMode={setDarkMode}
           darkMode={darkMode}
+          refresh={() => {
+            refetchReports();
+            refetchBounties();
+          }}
+          isRefreshing={isFetchingReports || isFetchingBounties}
+
         >
           <Box sx={{
             margin: '1rem'
@@ -133,7 +134,7 @@ const Newtab = () => {
                           ...styles
                         }}
                       >
-                        {isLoading ? <CircularProgress /> : <TableStat tableConfig={tableConfig} organizedReports={organizedReports} />}
+                        {isLoading ? <CircularProgress /> : <TableStat tagIdentities={tagIdentities} setTagIdentities={setTagIdentities} tableConfig={tableConfig} organizedReports={organizedReports} />}
                       </Card>
                     </Grid>
                   )

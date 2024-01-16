@@ -13,6 +13,7 @@ export interface SaleType {
     product_category_string_id: string;
     product_title: string;
     tracking_id: string;
+    total_sales_revenue?: number;
 }
 
 export interface BountyType {

@@ -21,13 +21,22 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import './Newtab.css';
 import './Newtab.scss';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import { OrganizedReportType, SummarySaleType, TableChartConfigType } from './utils';
+import { OrganizedReportType, SummarySaleType, TableChartConfigType, TagIdentifierType } from './utils';
 import useLocalStorage from './useLocalStorage';
 
-{/* <TableStat tableConfig={SUPPORTED_TABLES_CHARTS[0]} organizedReports={organizedReports}/> */ }
-
-
-const TableStatRow = ({ row, tableConfig, uniqueKey }: { row: SummarySaleType; tableConfig: TableChartConfigType; uniqueKey: string; }) => {
+const TableStatRow = ({
+    row,
+    tableConfig,
+    uniqueKey,
+    tagIdentities,
+    setTagIdentities,
+}: {
+    row: SummarySaleType;
+    tableConfig: TableChartConfigType;
+    uniqueKey: string;
+    tagIdentities: TagIdentifierType[];
+    setTagIdentities: (tagIdentities: TagIdentifierType[]) => void;
+}) => {
     const [open, setOpen] = useLocalStorage(`${uniqueKey}_open`, false);
     return (
         <>
@@ -45,7 +54,11 @@ const TableStatRow = ({ row, tableConfig, uniqueKey }: { row: SummarySaleType; t
                 </TableCell>
                 {tableConfig.columns.map((column) => {
                     // @ts-ignore
-                    const fmtData = column.format ? column.format(row[column.id], row) : row[column.id];
+                    const fmtData = column.format ? column.format(row[column.id], row, {
+                        tagIdentities,
+                        setTagIdentities,
+                        // @ts-ignore
+                    }) : row[column.id];
                     return (
                         <TableCell
                             key={column.id}
@@ -76,7 +89,11 @@ const TableStatRow = ({ row, tableConfig, uniqueKey }: { row: SummarySaleType; t
                                         return (<TableRow>
                                             {(tableConfig?.collapseColumns || []).map((column) => {
                                                 // @ts-ignore
-                                                const fmtData = column.format ? column.format(line[column.id], row) : line[column.id];
+                                                const fmtData = column.format ? column.format(line[column.id], line, {
+                                                    tagIdentities,
+                                                    setTagIdentities,
+                                                    // @ts-ignore
+                                                }) : line[column.id];
                                                 return (
                                                     <TableCell
                                                         key={column.id}
@@ -98,11 +115,17 @@ const TableStatRow = ({ row, tableConfig, uniqueKey }: { row: SummarySaleType; t
     )
 }
 
-const TableStat = ({ tableConfig, organizedReports }: {
+const TableStat = ({
+    tableConfig,
+    organizedReports,
+    tagIdentities,
+    setTagIdentities
+}: {
     tableConfig: TableChartConfigType;
     organizedReports: OrganizedReportType;
+    tagIdentities: TagIdentifierType[];
+    setTagIdentities: (tagIdentities: TagIdentifierType[]) => void;
 }) => {
-    const tableId = `${tableConfig.id}`;
     const [sort, setSort] = useLocalStorage(`${tableConfig.id}_sort`, tableConfig.defaultSort);
     const [sortDirection, setSortDirection] = useLocalStorage<'asc' | 'desc'>(`${tableConfig.id}_sortDirection`, tableConfig.defaultSortDirection);
     // @ts-ignore
@@ -167,6 +190,8 @@ const TableStat = ({ tableConfig, organizedReports }: {
                                         tableConfig={tableConfig}
                                         key={key}
                                         uniqueKey={key}
+                                        tagIdentities={tagIdentities}
+                                        setTagIdentities={setTagIdentities}
                                     />
                                 );
                             })}

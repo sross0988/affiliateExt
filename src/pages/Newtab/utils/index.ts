@@ -73,20 +73,30 @@ export const calculateProfit = (rows: SummarySaleType[]) => {
 
 export const TAG = 'jd-daily-20';
 
+export interface TagIdentifierType {
+    tag: string;
+    label: string;
+    link?: string;
+}
 
 export interface ColumnType {
     name: string;
     id: string;
     sortable?: boolean;
-    format?: (value: any, row: any) => any;
+    format?: (value: any, row: any, options?: {
+        tagIdentities?: TagIdentifierType[];
+        setTagIdentities?: (tagIdentities: TagIdentifierType[]) => void;
+    }) => any;
     align?: 'left' | 'right';
 }
 
 export interface CollapseColumnType {
     name: string;
     id: string;
-    // sortable?: boolean;
-    format?: (value: any, row: any) => any;
+    format?: (value: any, row: any, options?: {
+        tagIdentities?: TagIdentifierType[];
+        setTagIdentities?: (tagIdentities: TagIdentifierType[]) => void;
+    }) => any;
     align?: 'left' | 'right';
 }
 
@@ -201,6 +211,7 @@ export const getOrganizedTodaysReports = (reports: SaleType[], bounties: BountyT
 
     for (let i = 0; i < reports.length; i++) {
         const line = reports[i];
+        line.total_sales_revenue = parseInt(line.ordered_items, 10) * parseFloat(line.price);
 
         // reports by tag logic
         const tag = line.tracking_id;

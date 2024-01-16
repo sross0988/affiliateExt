@@ -1,10 +1,159 @@
 
 import React from 'react';
-import { StatConfigType, formatPrice, TableChartConfigType, TAG } from './utils';
+import { StatConfigType, formatPrice, TableChartConfigType, TAG, TagIdentifierType } from './utils';
 import _ from 'lodash';
 import {
     Link,
+    Dialog,
+    Button,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    TextField
 } from '@mui/material';
+
+const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
+    tag: string;
+    tagIdentities: TagIdentifierType[];
+    setTagIdentities: (tagIdentities: TagIdentifierType[]) => void;
+}) => {
+    const [open, setOpen] = React.useState(false);
+    const [label, setLabel] = React.useState('');
+    const [link, setLink] = React.useState('');
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
+    if ((tagIdentities || []).length === 0
+        || !_.find(tagIdentities, { tag })?.tag
+    ) {
+        return <>{tag}{` — `}<Link
+            onClick={handleClickOpen}
+            sx={{
+                cursor: 'pointer',
+            }}
+        >Add details</Link>
+            <React.Fragment>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                        component: 'form',
+                        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                            event.preventDefault();
+                            const formData = new FormData(event.currentTarget);
+                            const formJson = Object.fromEntries((formData as any).entries());
+                            const email = formJson.email;
+                            console.log(email);
+                            handleClose();
+                        },
+                    }}
+                >
+                    <DialogTitle>Add Tracking ID Details — {tag}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Map affiliate tracking IDs to labels and links, so you can easily see which items are earning you money.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            required
+                            margin="dense"
+                            id="label"
+                            name="email"
+                            label="Label"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            onChange={(event) => {
+                                setLabel(event.target.value);
+                            }}
+                            value={label}
+                        />
+
+                        <TextField
+                            margin="dense"
+                            id="link"
+                            name="link"
+                            label="Link"
+                            type="text"
+                            fullWidth
+                            variant="standard"
+                            onChange={(event) => {
+                                setLink(event.target.value);
+                            }}
+                            value={link}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button type="submit"
+                            onClick={() => {
+                                const newTagIdentities = [...tagIdentities];
+                                newTagIdentities.push({
+                                    tag,
+                                    label,
+                                    link,
+                                });
+                                setTagIdentities(newTagIdentities);
+                                handleClose();
+                            }}
+                        >Add</Button>
+                    </DialogActions>
+                </Dialog>
+            </React.Fragment>
+
+        </>;
+    }
+
+    const tagIdentity = _.find(tagIdentities, { tag });
+
+    if (tagIdentity?.link) {
+
+        return (
+            <Link
+                href={tagIdentity.link}
+                target="_blank"
+                rel="noopener noreferrer"
+            >{tagIdentity.label}</Link>
+        )
+    }
+
+    return <>{tagIdentity?.label}</>;
+
+}
+
+const AmazonLink = ({ row }: { row: any }) => {
+    let averagePrice = 0;
+    if ((row?.lines || []).length > 0) {
+        // average price of lines
+        averagePrice = parseFloat(Number(_.sumBy(row.lines, (line: any) => parseFloat(line.price)) / (row.lines.length || 1)).toFixed(2));
+    }
+
+    // average price to two decimal places
+    averagePrice = parseFloat(averagePrice.toFixed(2));
+
+    return (
+        <>
+            <Link
+                href={`https://www.amazon.com/dp/${row.asin}?tag=${TAG}`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >{row.title || row.product_title}</Link>{` — `}
+            <Link
+                href={`https://www.jungle.deals/deal/${row.asin}${averagePrice > 0 ? `?threshold=${averagePrice + 0.01}` : ''}`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >Details</Link>
+        </>
+    );
+}
+
 
 export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
     {
@@ -17,6 +166,13 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
             {
                 id: 'tracking_id',
                 name: 'Tracking ID',
+                // @ts-ignore
+                format: (value: string, row: any, options: {
+                    tagIdentities: TagIdentifierType[];
+                    setTagIdentities: (tagIdentities: TagIdentifierType[]) => void;
+                }) => {
+                    return (<TagLink tag={value} tagIdentities={options.tagIdentities} setTagIdentities={options.setTagIdentities} />);
+                },
             },
             {
                 id: 'merchant_name',
@@ -40,12 +196,8 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
                 name: 'Product Title',
                 id: 'title',
                 sortable: true,
-                format: (value: string, row: any) => {
-                    return <Link
-                        href={`https://www.amazon.com/dp/${row.asin}?tag=${TAG}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >{value}</Link>
+                format: (_value: string, row: any) => {
+                    return <AmazonLink row={row} />
                 },
                 align: 'left',
             },
@@ -88,13 +240,9 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
             {
                 id: 'product_title',
                 name: 'Product Title',
-                format: (value: string, row: any) => {
-                    return <Link
-                        href={`https://www.amazon.com/dp/${row.asin}?tag=${TAG}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >{value}</Link>
-                }
+                format: (_value: string, row: any) => {
+                    return <AmazonLink row={row} />
+                },
             },
             {
                 id: 'ordered_items',
@@ -123,6 +271,13 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
                 id: 'tag',
                 sortable: true,
                 align: 'left',
+                // @ts-ignore
+                format: (value: string, row: any, options: {
+                    tagIdentities: TagIdentifierType[];
+                    setTagIdentities: (tagIdentities: TagIdentifierType[]) => void;
+                }) => {
+                    return (<TagLink tag={value} tagIdentities={options.tagIdentities} setTagIdentities={options.setTagIdentities} />);
+                },
             },
             {
                 name: 'Total Items Ordered',
