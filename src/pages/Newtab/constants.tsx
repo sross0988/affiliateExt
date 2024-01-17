@@ -125,7 +125,7 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
         )
     }
 
-    return <>{tagIdentity?.label}</>;
+    return <>{tagIdentity?.label || tag}</>;
 
 }
 
