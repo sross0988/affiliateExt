@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import useChromeStorage from './useChromeStorage';
+
 
 // Function to check if window is available
 const isWindowAvailable = typeof window !== 'undefined';
@@ -53,4 +55,4 @@ function useLocalStorage<T>(
     return [storedValue, setValue];
 }
 
-export default useLocalStorage;
+export default process.env.NODE_ENV === 'development' ? useLocalStorage : useChromeStorage;

@@ -93,6 +93,7 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
                         <Button type="submit"
+                            disabled={!label}
                             onClick={() => {
                                 const newTagIdentities = [...tagIdentities];
                                 newTagIdentities.push({
