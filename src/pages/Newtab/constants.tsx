@@ -4,14 +4,17 @@ import { StatConfigType, formatPrice, TableChartConfigType, TAG, TagIdentifierTy
 import _ from 'lodash';
 import {
     Link,
+    Box,
     Dialog,
     Button,
     DialogTitle,
     DialogContent,
     DialogContentText,
     DialogActions,
-    TextField
+    TextField,
+    IconButton
 } from '@mui/material';
+import PencilIcon from '@mui/icons-material/Edit';
 
 const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
     tag: string;
@@ -22,6 +25,12 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
     const [label, setLabel] = React.useState('');
     const [link, setLink] = React.useState('');
 
+    const handleEditClick = (label: string, link: string) => {
+        handleClickOpen();
+        setLabel(label);
+        setLink(link);
+    }
+
     const handleClickOpen = () => {
         setOpen(true);
     };
@@ -30,30 +39,12 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
         setOpen(false);
     };
 
-    if ((tagIdentities || []).length === 0
-        || !_.find(tagIdentities, { tag })?.tag
-    ) {
-        return <>{tag}{` — `}<Link
-            onClick={handleClickOpen}
-            sx={{
-                cursor: 'pointer',
-            }}
-        >Add details</Link>
+    const renderDialog = () => {
+        return (
             <React.Fragment>
                 <Dialog
                     open={open}
                     onClose={handleClose}
-                    PaperProps={{
-                        component: 'form',
-                        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-                            event.preventDefault();
-                            const formData = new FormData(event.currentTarget);
-                            const formJson = Object.fromEntries((formData as any).entries());
-                            const email = formJson.email;
-                            console.log(email);
-                            handleClose();
-                        },
-                    }}
                 >
                     <DialogTitle>Add Tracking ID Details — {tag}</DialogTitle>
                     <DialogContent>
@@ -95,7 +86,7 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
                         <Button type="submit"
                             disabled={!label}
                             onClick={() => {
-                                const newTagIdentities = [...tagIdentities];
+                                const newTagIdentities = [...tagIdentities.filter((tagIdentity) => tagIdentity.tag !== tag)];
                                 newTagIdentities.push({
                                     tag,
                                     label,
@@ -108,24 +99,71 @@ const TagLink = ({ tag, tagIdentities, setTagIdentities }: {
                     </DialogActions>
                 </Dialog>
             </React.Fragment>
+        )
+    }
 
-        </>;
+    if ((tagIdentities || []).length === 0
+        || !_.find(tagIdentities, { tag })?.tag
+    ) {
+        return <Box
+            sx={{
+                display: 'inline-block',
+                cursor: 'pointer',
+                '&:hover .details': {
+                    visibility: 'visible !important',
+                },
+            }}
+
+        >{tag}<Box display="inline" sx={{
+            visibility: 'hidden',
+        }}
+            className="details"
+        >{` `}<Link
+            onClick={handleClickOpen}
+            sx={{
+                cursor: 'pointer',
+            }}
+        >Add details</Link>
+            </Box>
+            {renderDialog()}
+        </Box>;
     }
 
     const tagIdentity = _.find(tagIdentities, { tag });
 
-    if (tagIdentity?.link) {
+    return <Box
+        sx={{
+            display: 'inline-block',
+            cursor: 'pointer',
+            '&:hover .edit-button': {
+                visibility: 'visible !important',
+            },
+        }}
 
-        return (
+    >
+        {renderDialog()}
+        {
+            tagIdentity?.link ? (
+                <Link
+                    href={tagIdentity.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >{tagIdentity.label}</Link>
+            ) : (tagIdentity?.label || tag)
+        }<Box display="inline" sx={{
+            visibility: 'hidden',
+        }}
+            className="edit-button"
+        >{` `}
             <Link
-                href={tagIdentity.link}
-                target="_blank"
-                rel="noopener noreferrer"
-            >{tagIdentity.label}</Link>
-        )
-    }
-
-    return <>{tagIdentity?.label || tag}</>;
+                onClick={() => {
+                    handleEditClick(tagIdentity?.label || '', tagIdentity?.link || '');
+                }}
+            >
+                Edit
+            </Link>
+        </Box>
+    </Box>;
 
 }
 
@@ -145,7 +183,7 @@ const AmazonLink = ({ row }: { row: any }) => {
                 href={`https://www.amazon.com/dp/${row.asin}?tag=${TAG}`}
                 target="_blank"
                 rel="noopener noreferrer"
-            >{row.title || row.product_title}</Link>{` — `}
+            >{row.title || row.product_title}</Link>{` `}
             <Link
                 href={`https://www.jungle.deals/deal/${row.asin}${averagePrice > 0 ? `?threshold=${averagePrice + 0.01}` : ''}`}
                 target="_blank"
@@ -159,7 +197,7 @@ const AmazonLink = ({ row }: { row: any }) => {
 export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
     {
         id: 'reportRowsByASIN',
-        name: 'Today\'s Sales by Items',
+        name: 'Today\'s Sales Grouped By Items',
         description: 'Sales data organized by item.',
         type: 'table',
         uniqueKey: 'asin',
@@ -232,7 +270,7 @@ export const SUPPORTED_TABLES_CHARTS: TableChartConfigType[] = [
 
     },
     {
-        name: 'Today\'s Sales by Tracking ID',
+        name: 'Today\'s Sales Grouped By Tracking ID',
         id: 'reportRowsByTag',
         type: 'table',
         description: 'Data organized by Tracking ID.',
